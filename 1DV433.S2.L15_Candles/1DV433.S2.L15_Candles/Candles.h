@@ -1,7 +1,11 @@
 #pragma once
 
-int candles();
+void candles();
 
 int userInput(std::string message);
 
-int perceivedTemperature(int measuredTemp, int windSpeed);
+bool userYesOrNo(std::string question);
+
+void candleConsumption(int age, int packageSize, std::vector<int>& consumption, int& residualCandles);
+
+void printConsumption(std::vector<int>& consumption, int residualCandles);
