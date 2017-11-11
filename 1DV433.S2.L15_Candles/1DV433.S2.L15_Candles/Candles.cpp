@@ -105,7 +105,6 @@ bool userYesOrNo(string question)
     // Ask the user if program should re-run and read input
     cout << endl << question << " (Y/n): ";
     cin.clear();
-    //cin.ignore(numeric_limits<streamsize>::max(), '\n');
     getline(cin, input);
 
     // Check if answer is negative

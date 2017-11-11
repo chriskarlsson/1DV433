@@ -1,7 +1,8 @@
 //-----------------------------------------------------------------------
 // File:    WineChilling.cpp
-// Summary: Calculates the time it takes to chill a bottle of wine to a
-//          desired temperature
+// Summary: Asks user for need information to calculate the time it takes
+//          to chill a bottle of wine to a desired temperature and then
+//          prints the result.
 // Version: 1.0
 // Owner:   Christoffer Karlsson
 //-----------------------------------------------------------------------
@@ -32,10 +33,22 @@ void wineChilling()
     do
     {
 
-        auto wineTemp = userInput("Enter the current temperature of the wine: ");
-        auto fridgeTemp = userInput("Enter the temperature of the refrigerator: ");
-        auto desiredWineTemp = userInput("Enter the desired temperature of the wine: ");
+        const auto wineTemp = userInput("Enter the current temperature of the wine: ");
+        const auto desiredWineTemp = userInput("Enter the desired temperature of the wine: ");
+        const auto coolerTemp = userInput("Enter the temperature of the cooler: ");
 
+        if (wineTemp < desiredWineTemp || desiredWineTemp < coolerTemp)
+        {
+            cout << "Invaldid input. Wine temperature must be higher than desired "
+                 << "temperature which must be higher than the cooler temperature."
+                 << endl;
+            continue;
+        }
+
+        auto neededTime = calculateNeededTime(wineTemp, desiredWineTemp, coolerTemp);
+
+        cout << endl << "It takes " << neededTime
+             << " minutes for the wine to reach the desired temperature." << endl;
     } while (userYesOrNo("One more time?"));
 }
 
@@ -56,9 +69,9 @@ int userInput(string message)
         cin >> value;
 
         // Check that input is valid and otherwise re-run
-        if (cin.fail() || value < 0)
+        if (cin.fail())
         {
-            cout << "Invalid input. Please enter a positive integer." << endl;
+            cout << "Invalid input. Please enter a integer." << endl;
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
@@ -84,11 +97,35 @@ bool userYesOrNo(string question)
     // Ask the user if program should re-run and read input
     cout << endl << question << " (Y/n): ";
     cin.clear();
-    //cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     getline(cin, input);
+    cout << endl;
 
     // Check if answer is negative
     auto answer = input != "N" && input != "n";
 
     return answer;
+}
+
+//---------------------------------------------------------------------------
+// int calculateNeededTime(int wineTemp, int desiredWineTemp, int coolerTemp)
+//
+// Summary: Calculates the time it takes to chill a bottle of wine to a
+//          desired temperature
+// Returns: Needed time in minutes
+//---------------------------------------------------------------------------
+int calculateNeededTime(int wineTemp, int desiredWineTemp, int coolerTemp)
+{
+    auto time = 0.0;
+    auto currentTemp = (double)wineTemp;
+    const auto tau = 50.0;
+
+    // Step method to solve the differential equation
+    while (currentTemp > desiredWineTemp)
+    {
+        currentTemp -= (currentTemp - coolerTemp) / tau * 0.1;
+        time += 0.1;
+    }
+
+    return (int)round(time);
 }
