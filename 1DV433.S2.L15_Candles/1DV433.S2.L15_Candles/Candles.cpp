@@ -2,11 +2,12 @@
 // File:    Candles.cpp
 // Summary: Calculates the number of candle packages needed by a person
 //          when celebrating birthdays
-// Version: 1.0
+// Version: 2.0
 // Owner:   Christoffer Karlsson
 //-----------------------------------------------------------------------
 // Log:   2017-11-08 File created by Christoffer
 //        2017-11-09 Added unit tests
+//        2017-11-19 Corrected calculation
 //-----------------------------------------------------------------------
 
 // Preprocessor directives
