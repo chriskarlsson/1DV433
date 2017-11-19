@@ -34,6 +34,7 @@ void candles()
     {
         int age = 100;
         int packageSize = 24;
+        const int initialPackages = 1;
 
         // Build string asking user wether to use default values
         stringstream ss;
@@ -53,10 +54,10 @@ void candles()
         int residualCandles;
 
         // Calculate consumption
-        candleConsumption(age, packageSize, consumption, residualCandles);
+        candleConsumption(age, packageSize, initialPackages, consumption, residualCandles);
 
         // Print
-        printConsumption(consumption, residualCandles);
+        printConsumption(consumption, initialPackages, residualCandles);
     } while (userYesOrNo("One more time?"));
 }
 
@@ -124,10 +125,11 @@ bool userYesOrNo(string question)
 //-----------------------------------------------------------------
 void candleConsumption(int age,
                        int packageSize,
+                       int initialPackages,
                        vector<int>& consumption,
                        int& residualCandles)
 {
-    residualCandles = 0;
+    residualCandles = packageSize * initialPackages;
 
     // Loop for each year
     for (int i = 0; i <= age; i++)
@@ -139,7 +141,7 @@ void candleConsumption(int age,
         if (residualCandles < 0)
         {
             // Calculate needed number of packages
-            auto boughtPackages = abs(residualCandles) / packageSize + 1;
+            auto boughtPackages = ceil(abs((double)residualCandles) / packageSize);
 
             // Add needed number of packages to return vector
             consumption.push_back(boughtPackages);
@@ -162,7 +164,7 @@ void candleConsumption(int age,
 // Summary: Calculates the candle consumption and residual candles
 // Returns: vector<int> consumption and int residualCandles
 //-----------------------------------------------------------------
-void printConsumption(vector<int>& consumption, int residualCandles)
+void printConsumption(vector<int>& consumption, int initialPackages, int residualCandles)
 {
     // Print headers
     cout << endl << setw(5) << left << "Year" << "Packages" << endl;
@@ -179,7 +181,7 @@ void printConsumption(vector<int>& consumption, int residualCandles)
     // Calculate the total number of packages
     auto totalNumberOfPackages = accumulate(consumption.begin(),
                                             consumption.end(),
-                                            0);
+                                            initialPackages);
 
     // Print summary
     cout << endl
