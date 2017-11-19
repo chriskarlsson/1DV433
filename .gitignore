@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+# Visual studio
+.vs
+*.log
+*.tlog
+*.idb
+*.pdb
+*.lastbuildstate
+*.ilk
+*.exp
