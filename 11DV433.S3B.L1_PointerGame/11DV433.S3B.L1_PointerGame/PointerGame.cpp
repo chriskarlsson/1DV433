@@ -32,7 +32,7 @@ int  main()
     ptr++;
     // Print the length difference between the arrays (3)
     cout << "\n\"ptr\" is now " << ptr - alpha << " bytes from the beginning. \n\n";
-    // Print that alpha is 27 bytes and ptr is 24 bytes
+    // Print that alpha is 26 bytes and ptr is 23 bytes
     cout << "Now the string " << alpha << " is " << strlen(alpha) << " bytes long!\n" << "and the string " << ptr << " is " << strlen(ptr) << " bytes long!\n";
     strcpy(ptr, "defghijklmnopqrstuvwxyz");
     // Show that the operation above also changed alpha by printing the string and the value of the last element
