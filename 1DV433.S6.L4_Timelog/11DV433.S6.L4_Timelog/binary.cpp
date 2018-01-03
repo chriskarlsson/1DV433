@@ -9,12 +9,10 @@
 //-----------------------------------------------------------------------
 
 // Preprocessor directives
-#include <iostream>
 #include <fstream>
 #include <iostream>
 #include <iomanip>
 #include <ctime>
-#include <Windows.h>
 #include "binary.h"
 
 using namespace std;
@@ -27,6 +25,9 @@ struct DataRecord
     time_t locTime; // Local Time 
 };
 
+// Longest path used in older versions of Windows
+const int MAX_PATH = 260;
+
 //-----------------------------------------------------------------
 // int main(int argc, char *argv[])
 //
@@ -36,7 +37,7 @@ struct DataRecord
 void main(int argc, char *argv[])
 {
     // Print help
-    if (argc == 2 && strcmp(argv[1], "-h"))
+    if (argc == 2 && strcmp(argv[1], "-h") == 0)
     {
         cout << "usage: 11DV433.S6.L4_Timelog [filePath]" << endl;
         return;
@@ -64,6 +65,11 @@ void main(int argc, char *argv[])
 
     // Close files
     inFile.close();
+
+#ifdef _DEBUG
+    // Wait for user if running from Visual Studio
+    cin.get();
+#endif // DEBUG
 
     return;
 }
