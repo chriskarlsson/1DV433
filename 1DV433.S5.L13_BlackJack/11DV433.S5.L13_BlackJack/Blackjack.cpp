@@ -1,14 +1,18 @@
 //-----------------------------------------------------------------------
 // File:    Blackjack.cpp
 // Summary: Blackjack game
-// Version: 1.0
+// Version: 1.1
 // Owner:   Christoffer Karlsson
 //-----------------------------------------------------------------------
 // Log:   2017-12-30 File created by Christoffer. Initial version only
 //                   available for Windows.
+//        2018-01-07 Version 1.1. Bug fix.
 //-----------------------------------------------------------------------
 
 // Preprocessor directives
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 #include <iostream>
 #include <iomanip>
 #include <cstring>
@@ -28,6 +32,9 @@ const int BLACKJACK = 21;
 //-----------------------------------------------------------------
 void blackjack()
 {
+    // Enable memory leak flags
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
     do
     {
         int numberOfPlayers;
@@ -466,11 +473,12 @@ void play(Player *&players, int &numberOfPlayers, int *&dealerCards, int &number
     }
 
     // Deal cards to dealer until at least 17
-    int dealerScore;
+    int dealerScore = bestValue(dealerCards, numberOfDealerCards);
     const int DEALER_STOP_SCORE = 17;
-    while (dealerScore = bestValue(dealerCards, numberOfDealerCards) < DEALER_STOP_SCORE)
+    while (dealerScore < DEALER_STOP_SCORE)
     {
         dealCard(dealerCards, numberOfDealerCards, cards, numberOfCards);
+        dealerScore = bestValue(dealerCards, numberOfDealerCards);
     }
 
     // Calculate how much each player win
@@ -609,12 +617,13 @@ void printTable(Player *&players, int &numberOfPlayers, int *&dealerCards, int n
 
     const int COLUMN_WIDTH = 9;
     const int MIDDLE = COLUMN_WIDTH * numberOfPlayers / 2;
+    const int MAX_CARD_STRING_LENGTH = 4;
 
     // Print dealer cards in the middle
-    printDealerCards(dealerCards, numberOfDealerCards, printOnlyFirstDealerCard, MIDDLE);
+    printDealerCards(dealerCards, numberOfDealerCards, printOnlyFirstDealerCard, MIDDLE, MAX_CARD_STRING_LENGTH);
 
     // Print the player cards
-    printPlayerCards(players, numberOfPlayers, activePlayer, COLUMN_WIDTH);
+    printPlayerCards(players, numberOfPlayers, activePlayer, COLUMN_WIDTH, MAX_CARD_STRING_LENGTH);
 
     // Print the current score if wanted
     if (printRoundScore)
@@ -629,17 +638,18 @@ void printTable(Player *&players, int &numberOfPlayers, int *&dealerCards, int n
 // Summary: Prints the dealer cards
 // Returns: -
 //-----------------------------------------------------------------
-void printDealerCards(int *&dealerCards, int numberOfDealerCards, bool printOnlyFirstDealerCard, int middlePosition)
+void printDealerCards(int *&dealerCards, int numberOfDealerCards, bool printOnlyFirstDealerCard, const int MIDDLE_POSITION, const int MAX_CARD_STRING_LENGTH)
 {
-    cout << setw(middlePosition) << "Dealer" << endl;
+    cout << setw(MIDDLE_POSITION) << "Dealer" << endl;
 
     // Print the cards
     int cardIndex = 0;
     do
     {
-        char card[4];
-        getCard(dealerCards[cardIndex++], card);
-        cout << setw(middlePosition) << card << endl;
+        char *card = new char[MAX_CARD_STRING_LENGTH];
+        getCard(dealerCards[cardIndex++], card, MAX_CARD_STRING_LENGTH);
+        cout << setw(MIDDLE_POSITION) << card << endl;
+        delete[] card;
     } while (!printOnlyFirstDealerCard && cardIndex < numberOfDealerCards);
 
     cout << endl;
@@ -651,14 +661,14 @@ void printDealerCards(int *&dealerCards, int numberOfDealerCards, bool printOnly
 // Summary: Prints the players cards
 // Returns: -
 //-----------------------------------------------------------------
-void printPlayerCards(Player *&players, int &numberOfPlayers, int activePlayer, int columnWidth)
+void printPlayerCards(Player *&players, int &numberOfPlayers, int activePlayer, const int COLUMN_WIDTH, const int MAX_CARD_STRING_LENGTH)
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     const int YELLOW = 14;
     const int WHITE = 15;
     // Print player identifier
     const char *PLAYER_STRING = " Player";
-    const int SPACE_LEFT_FOR_NUMBER = columnWidth - strlen(PLAYER_STRING);
+    const int SPACE_LEFT_FOR_NUMBER = COLUMN_WIDTH - strlen(PLAYER_STRING);
     for (int i = numberOfPlayers - 1; i >= 0; i--)
     {
         cout << PLAYER_STRING << setw(SPACE_LEFT_FOR_NUMBER) << players[i].id;
@@ -683,7 +693,7 @@ void printPlayerCards(Player *&players, int &numberOfPlayers, int activePlayer, 
             char output[4];
             if (players[i].numberOfCards > cardIndex)
             {
-                getCard(players[i].cards[cardIndex], output);
+                getCard(players[i].cards[cardIndex], output, MAX_CARD_STRING_LENGTH);
             }
             else
             {
@@ -696,12 +706,12 @@ void printPlayerCards(Player *&players, int &numberOfPlayers, int activePlayer, 
             {
                 // Print cards as yellow to inform the user which the current player is
                 SetConsoleTextAttribute(hConsole, YELLOW);
-                cout << setw(columnWidth) << output;
+                cout << setw(COLUMN_WIDTH) << output;
                 SetConsoleTextAttribute(hConsole, WHITE);
             }
             else
             {
-                cout << setw(columnWidth) << output;
+                cout << setw(COLUMN_WIDTH) << output;
             }
         }
 
@@ -811,22 +821,22 @@ int getRank(int card)
 //          outCard has to be able to hold at least 4 char
 // Returns: -
 //-----------------------------------------------------------------
-void getCard(int card, char *outCard)
+void getCard(int card, char *outCard, const int MAX_CARD_STRING_LENGTH)
 {
     // Suit
     switch (card % 4)
     {
     case 0:
-        strcpy_s(outCard, sizeof outCard, "S"); // Spades
+        strcpy_s(outCard, MAX_CARD_STRING_LENGTH, "S"); // Spades
         break;
     case 1:
-        strcpy_s(outCard, sizeof outCard, "C"); // Club
+        strcpy_s(outCard, MAX_CARD_STRING_LENGTH, "C"); // Club
         break;
     case 2:
-        strcpy_s(outCard, sizeof outCard, "H"); // Heart
+        strcpy_s(outCard, MAX_CARD_STRING_LENGTH, "H"); // Heart
         break;
     case 3:
-        strcpy_s(outCard, sizeof outCard, "D"); // Diamond
+        strcpy_s(outCard, MAX_CARD_STRING_LENGTH, "D"); // Diamond
         break;
     }
 
@@ -835,22 +845,22 @@ void getCard(int card, char *outCard)
     switch (VALUE)
     {
     case 0:
-        strcat_s(outCard, sizeof outCard, "K");
+        strcat_s(outCard, MAX_CARD_STRING_LENGTH, "K");
         break;
     case 1:
-        strcat_s(outCard, sizeof outCard, " ");
+        strcat_s(outCard, MAX_CARD_STRING_LENGTH, " ");
         break;
     case 11:
-        strcat_s(outCard, sizeof outCard, "J");
+        strcat_s(outCard, MAX_CARD_STRING_LENGTH, "J");
         break;
     case 12:
-        strcat_s(outCard, sizeof outCard, "Q");
+        strcat_s(outCard, MAX_CARD_STRING_LENGTH, "Q");
         break;
     default:
-        char *temp = (char*)malloc(3);
-        _itoa_s(VALUE, temp, 3, 10);
-        strcat_s(outCard, sizeof outCard, temp);
-        free(temp);
+        int const MAX_RANK_LENGTH = 3;
+        char temp[MAX_RANK_LENGTH];
+        _itoa_s(VALUE, temp, MAX_RANK_LENGTH, 10);
+        strcat_s(outCard, MAX_CARD_STRING_LENGTH, temp);
         break;
     }
 }

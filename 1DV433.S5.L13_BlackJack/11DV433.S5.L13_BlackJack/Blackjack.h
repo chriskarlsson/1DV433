@@ -38,9 +38,9 @@ void deletePlayer(Player *& players, int & numberOfPlayers, int playerIndex);
 
 void printTable(Player *& players, int & numberOfPlayers, int *& dealerCards, int numberOfDealerCards, int activePlayer, bool printOnlyFirstDealerCard = true, bool printScore = false);
 
-void printDealerCards(int *& dealerCards, int numberOfDealerCards, bool printOnlyFirstDealerCard, int middlePosition);
+void printDealerCards(int *& dealerCards, int numberOfDealerCards, bool printOnlyFirstDealerCard, const int MIDDLE_POSITION, const int MAX_CARD_STRING_LENGTH);
 
-void printPlayerCards(Player *& players, int & numberOfPlayers, int activePlayer, int columnWidth);
+void printPlayerCards(Player *& players, int & numberOfPlayers, int activePlayer, const int COLUMN_WIDTH, const int MAX_CARD_STRING_LENGTH);
 
 void printScore(Player *& players, int numberOfPlayers, int columnWidth);
 
@@ -48,4 +48,4 @@ int bestValue(int *& cards, int & numberOfCards);
 
 int getRank(int card);
 
-void getCard(int card, char *outCard);
+void getCard(int card, char *outCard, const int MAX_CARD_STRING_LENGTH);
