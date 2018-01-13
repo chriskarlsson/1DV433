@@ -6,6 +6,8 @@
 *.lo
 *.o
 *.obj
+*.obj.enc
+*.iobj
 
 # Precompiled Headers
 *.gch
@@ -40,3 +42,4 @@
 *.lastbuildstate
 *.ilk
 *.exp
+*.ipdb
